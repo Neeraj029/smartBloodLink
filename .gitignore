@@ -39,3 +39,8 @@ undecorated_symbol_map.json
 # Temporary extracted files
 srs_partA.txt
 srs_partB.txt
+
+# Gradle
+.gradle/
+android/.gradle/
+android/app/.gradle/
