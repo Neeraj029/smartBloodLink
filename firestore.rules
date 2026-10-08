@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function getUserRole() {
+      return request.auth.token.role;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (getUserRole() == 'admin' || request.auth.token.admin == true);
+    }
+    
+    function isHospital() {
+      return isAuthenticated() && (getUserRole() == 'hospital' || isAdmin());
+    }
+
+    function isAmbulance() {
+      return isAuthenticated() && (getUserRole() == 'ambulance' || isAdmin());
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Requests collection (Emergency blood requests)
+    match /requests/{requestId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // Donors collection
+    match /donors/{donorId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(donorId) || isAdmin();
+    }
+
+    // Inventory collection (Hospital blood bags)
+    match /inventory/{bagId} {
+      allow read: if isAuthenticated();
+      allow write: if isHospital();
+    }
+
+    // Sensor readings collection (ESP32 IoT cold-chain)
+    match /sensorReadings/{readingId} {
+      allow read: if isAuthenticated();
+      allow create: if isHospital() || isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // Ambulance trips collection
+    match /ambulanceTrips/{tripId} {
+      allow read: if isAuthenticated();
+      allow write: if isAmbulance() || isHospital();
+    }
+
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // Audit logs collection
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if false; // Append-only immutable log
+    }
+  }
+}

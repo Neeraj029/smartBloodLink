@@ -1,0 +1,37 @@
+name: smart_blood_link
+description: "Smart BloodLink - Intelligent Emergency Blood Matching, IoT Inventory & Real-Time Response System"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  provider: ^6.1.2
+  google_fonts: ^6.2.1
+  intl: ^0.19.0
+  fl_chart: ^0.68.0
+  uuid: ^4.4.0
+  font_awesome_flutter: ^10.7.0
+  shared_preferences: ^2.2.3
+  firebase_core: ^3.1.0
+  firebase_auth: ^5.1.0
+  cloud_firestore: ^5.0.1
+  firebase_storage: ^12.0.1
+  firebase_messaging: ^15.0.1
+  google_maps_flutter: ^2.6.1
+  flutter_local_notifications: ^17.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/images/
